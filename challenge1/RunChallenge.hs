@@ -1,3 +1,4 @@
+module Challenge1.RunChallenge (main) where
 
 hexVal :: Char -> Int
 hexVal '0' = 0
@@ -41,9 +42,9 @@ encodeBase64 (a:b:c:x) = do
 --   concat(lines(fileContents))
 
 main = do
-  fileInput <- readFile "input.txt"
+  fileInput <- readFile "challenge1/input.txt"
   let cleanedInput = concat $ lines $ fileInput
-  fileExpectedOutput <- readFile "expected_output.txt"
+  fileExpectedOutput <- readFile "challenge1/expected_output.txt"
   let cleanedExpectedOutput = concat $ lines $ fileExpectedOutput
   let inputLength = show(length(cleanedInput))
   let decodedInput = decodeHex(cleanedInput)
