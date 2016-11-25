@@ -1,7 +1,28 @@
-module Main where
+module Main (main) where
 
 import qualified Challenge1.RunChallenge
+import qualified Challenge2.RunChallenge
+import Text.PrettyPrint.ANSI.Leijen
 
 main :: IO ()
--- main = putStrLn "Hello, Haskell!"
-main = Challenge1.RunChallenge.main
+main = do
+  runChallenge("Challenge 1", Challenge1.RunChallenge.run)
+  runChallenge("Challenge 2", Challenge2.RunChallenge.run)
+
+runChallenge (label, fn) = do
+  let extendedLine = replicate (60 - length(label)) '-'
+  let labelText = "------- [ " ++ label ++ "] ---" ++ extendedLine
+  putDoc $ dullyellow (text labelText) <> linebreak
+  fn(greenText, redText, blueText)
+
+blueText :: String -> IO()
+blueText (message) = do
+  putDoc $ blue (text message) <> linebreak
+
+redText :: String -> IO()
+redText (message) = do
+  putDoc $ dullred (text message) <> linebreak
+
+greenText :: String -> IO()
+greenText (message) = do
+  putDoc $ dullgreen (text message) <> linebreak

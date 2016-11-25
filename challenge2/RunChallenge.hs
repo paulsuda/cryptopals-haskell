@@ -1,5 +1,10 @@
-import Data.Bits
+module Challenge2.RunChallenge (main, run) where
 
-main = print $ (xor 2 3 :: Int)
+main :: IO ()
+main = do
+  run(putStrLn, putStrLn, putStrLn)
 
 
+run (putResult, putError, putStatus) = do
+  putResult("coming")
+  putError("soon")
