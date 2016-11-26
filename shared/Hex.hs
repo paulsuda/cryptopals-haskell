@@ -1,5 +1,5 @@
 
-module Shared.Hex (decode, charVal) where
+module Shared.Hex (decode, encode, charVal, valChar) where
 
 charVal :: Char -> Int
 charVal '0' = 0
@@ -19,6 +19,29 @@ charVal 'd' = 13
 charVal 'e' = 14
 charVal 'f' = 15
 
+valChar 0 = '0'
+valChar 1 = '1'
+valChar 2 = '2'
+valChar 3 = '3'
+valChar 4 = '4'
+valChar 5 = '5'
+valChar 6 = '6'
+valChar 7 = '7'
+valChar 8 = '8'
+valChar 9 = '9'
+valChar 10 = 'a'
+valChar 11 = 'b'
+valChar 12 = 'c'
+valChar 13 = 'd'
+valChar 14 = 'e'
+valChar 15 = 'f'
+
 decode :: String -> String
 decode "" = ""
 decode (a:b:x) = [toEnum(charVal(a) * 16 + charVal(b))] ++ decode(x)
+
+encode :: String -> String
+encode "" = ""
+encode (a:x) = do
+  let charVal = fromEnum(a)
+  [valChar(quot charVal 16)] ++ [valChar(mod charVal 16)] ++ encode(x)
