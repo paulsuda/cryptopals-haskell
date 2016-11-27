@@ -10,19 +10,16 @@ main = do
   runChallenge("Challenge 2", Challenge2.RunChallenge.run)
 
 runChallenge (label, fn) = do
-  let extendedLine = replicate (60 - length(label)) '-'
+  let extendedLine = replicate (60 - length label) '-'
   let labelText = "------- [ " ++ label ++ "] ---" ++ extendedLine
   putDoc $ dullyellow (text labelText) <> linebreak
   fn(greenText, redText, blueText)
 
 blueText :: String -> IO()
-blueText (message) = do
-  putDoc $ blue (text message) <> linebreak
+blueText message = putDoc $ blue (text message) <> linebreak
 
 redText :: String -> IO()
-redText (message) = do
-  putDoc $ dullred (text message) <> linebreak
+redText message = putDoc $ dullred (text message) <> linebreak
 
 greenText :: String -> IO()
-greenText (message) = do
-  putDoc $ dullgreen (text message) <> linebreak
+greenText message = putDoc $ dullgreen (text message) <> linebreak

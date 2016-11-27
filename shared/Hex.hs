@@ -38,10 +38,9 @@ valChar 15 = 'f'
 
 decode :: String -> String
 decode "" = ""
-decode (a:b:x) = [toEnum(charVal(a) * 16 + charVal(b))] ++ decode(x)
+decode (a:b:x) = toEnum(charVal a  * 16 + charVal b) : decode x
 
 encode :: String -> String
 encode "" = ""
-encode (a:x) = do
-  let charVal = fromEnum(a)
-  [valChar(quot charVal 16)] ++ [valChar(mod charVal 16)] ++ encode(x)
+encode (a:x) = [valChar(quot charVal 16)] ++ [valChar(mod charVal 16)] ++ encode x
+  where charVal = fromEnum a
