@@ -1,19 +1,10 @@
 module Challenge2.RunChallenge (main, run) where
 
 import qualified Shared.Hex as Hex
-import Data.Bits (xor)
+import Shared.XorUtils (xorStrings)
 
 main :: IO ()
 main = run(putStrLn, putStrLn, putStrLn)
-
-xorChars :: Char -> Char -> Char
-xorChars a b = toEnum(xor aInt bInt)
-  where aInt = fromEnum a
-        bInt = fromEnum b
-
-xorStrings :: String -> String -> String
-xorStrings "" "" = ""
-xorStrings a b = xorChars (head a) (head b) : xorStrings (tail a) (tail b)
 
 run (putResult, putError, putStatus) = do
   startingDataFile <- readFile "challenge2/starting_data.txt"
