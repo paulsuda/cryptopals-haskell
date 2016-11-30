@@ -1,14 +1,36 @@
-module Challenge3.RunChallenge (main, run) where
+{-# LANGUAGE ParallelListComp #-}
+
+module Challenge3.RunChallenge (main, run, testKeyScores, englishScore, charHistogram) where
 
 import qualified Shared.Hex as Hex
 import Shared.XorUtils (xorStrings)
 
+type HistValue = Float
+type HistArray = [HistValue]
+
 main :: IO ()
 main = run(putStrLn, putStrLn, putStrLn)
 
+-- maxIndexHelper :: HistArray -> Int -> HistValue -> HistValue
+-- maxIndexHelper [] index val = index
+-- maxIndexHelper hist index val = maxIndexHelper (tail hist) (succ index) (nextVal)
+--   where thisVal = head hist
+--         isNewMax = thisVal > val
+--
+--
+-- maxIndex :: HistArray -> HistValue
+-- maxIndex hist = maxIndexHelper hist 0 0.0
+
+charHistogram :: String -> HistArray
+charHistogram "" = replicate 256 0.0
+charHistogram testText = [ if i == histIndex then succ x else x | x <- histArray | i <- [0 .. 255] ]
+  where histIndex = fromEnum $ head testText
+        histArray = charHistogram $ tail testText
+
 -- Given some text, returns a score for likelyhood it is english text.
-englishScore :: String -> Rational
-englishScore testText = 0.5
+englishScore :: String -> HistValue
+englishScore testText = hist !! fromEnum 'e'
+  where hist = charHistogram testText
 
 -- Decrypt plaintext with xor key
 decryptXorSimple :: String -> Int -> String
@@ -18,13 +40,13 @@ decryptXorSimple cipherText xorKey = xorStrings cipherText keyString
         keyString = replicate textLength keyChar
 
 -- Given ciphertext and a test key returns a score
-scoreKey :: String -> Int -> Rational
+scoreKey :: String -> Int -> HistValue
 scoreKey cipherText xorKey = englishScore possiblePlaintext
   where possiblePlaintext = decryptXorSimple cipherText xorKey
 
 -- Given an array of keys to test and a cipher text argument, returns
 -- a list of scores for each key.
-testKeyScores :: [Int] -> String -> [Rational]
+testKeyScores :: [Int] -> String -> HistArray
 testKeyScores testKeys cipherText = map (scoreKey cipherText) testKeys
 
 run (putResult, putError, putStatus) = do
@@ -36,10 +58,13 @@ run (putResult, putError, putStatus) = do
   let testKeys = [0 .. 255]
   let scores = testKeyScores testKeys cipherText
   let textKeyScores = zip testKeys scores
-  let xorKey = 33 -- TODO!
+  let sortedKeys = textKeyScores
+  let xorKey = fst $ head sortedKeys
   let decryptedString = decryptXorSimple cipherText xorKey
   putStatus("Ciphertext (length " ++ show(length cipherTextHex) ++ "): " ++ cipherTextHex)
   putStatus("Ciphertext String: " ++ cipherText)
+  putStatus("XOR Key: " ++ show xorKey)
+  putStatus("Decrypted Output: " ++ decryptedString)
   putStatus("Expected Output (length " ++ show(length expectedOutput) ++ "): " ++ expectedOutput)
   if decryptedString == expectedOutput then putResult "OK! Expected result."
   else putError "ERROR! Result not as expected."
