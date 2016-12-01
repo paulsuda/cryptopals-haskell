@@ -20,6 +20,8 @@ englishScore testText = (e_count + wspace_count) / textLength
         e_count = hist !! fromEnum 'e'
         wspace_count = (hist !! fromEnum '\t') + (hist !! fromEnum '\n') + (hist !! fromEnum ' ')
 
+-- Other tests: contains the word "the" , contains only printable chars, ratio of letters to non letters
+
 
 maxIndexHelper :: HistArray -> Int -> (Int, HistValue)
 maxIndexHelper [] index = (index, 0.0 :: HistValue)
