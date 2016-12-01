@@ -11,15 +11,15 @@ type HistArray = [HistValue]
 main :: IO ()
 main = run(putStrLn, putStrLn, putStrLn)
 
--- maxIndexHelper :: HistArray -> Int -> HistValue -> HistValue
--- maxIndexHelper [] index val = index
--- maxIndexHelper hist index val = maxIndexHelper (tail hist) (succ index) (nextVal)
---   where thisVal = head hist
---         isNewMax = thisVal > val
---
---
--- maxIndex :: HistArray -> HistValue
--- maxIndex hist = maxIndexHelper hist 0 0.0
+maxIndexHelper :: HistArray -> Int -> (Int, HistValue)
+maxIndexHelper [] index = (index, 0.0 :: HistValue)
+maxIndexHelper hist index = if isNewMax then (index, thisVal) else (maxIndex, maxValue)
+  where thisVal = head hist
+        (maxIndex, maxValue) = maxIndexHelper (tail hist) (succ index)
+        isNewMax = thisVal > maxValue
+
+maxIndex :: HistArray -> (Int, HistValue)
+maxIndex hist = maxIndexHelper hist 0
 
 charHistogram :: String -> HistArray
 charHistogram "" = replicate 256 0.0
@@ -57,9 +57,8 @@ run (putResult, putError, putStatus) = do
   let expectedOutput = concat $ lines expectedOutputFile
   let testKeys = [0 .. 255]
   let scores = testKeyScores testKeys cipherText
-  let textKeyScores = zip testKeys scores
-  let sortedKeys = textKeyScores
-  let xorKey = fst $ head sortedKeys
+  -- let textKeyScores = zip testKeys scores
+  let (xorKey, bestScore) = maxIndex scores 
   let decryptedString = decryptXorSimple cipherText xorKey
   putStatus("Ciphertext (length " ++ show(length cipherTextHex) ++ "): " ++ cipherTextHex)
   putStatus("Ciphertext String: " ++ cipherText)
