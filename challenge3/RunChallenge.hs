@@ -11,6 +11,16 @@ type HistArray = [HistValue]
 main :: IO ()
 main = run(putStrLn, putStrLn, putStrLn)
 
+-- Given some text, returns a score for likelyhood it is english text.
+-- For now we just count e's and whitespace.
+englishScore :: String -> HistValue
+englishScore testText = (e_count + wspace_count) / textLength
+  where hist = charHistogram testText
+        textLength = fromIntegral $ length testText
+        e_count = hist !! fromEnum 'e'
+        wspace_count = (hist !! fromEnum '\t') + (hist !! fromEnum '\n') + (hist !! fromEnum ' ')
+
+
 maxIndexHelper :: HistArray -> Int -> (Int, HistValue)
 maxIndexHelper [] index = (index, 0.0 :: HistValue)
 maxIndexHelper hist index = if isNewMax then (index, thisVal) else (maxIndex, maxValue)
@@ -26,11 +36,6 @@ charHistogram "" = replicate 256 0.0
 charHistogram testText = [ if i == histIndex then succ x else x | x <- histArray | i <- [0 .. 255] ]
   where histIndex = fromEnum $ head testText
         histArray = charHistogram $ tail testText
-
--- Given some text, returns a score for likelyhood it is english text.
-englishScore :: String -> HistValue
-englishScore testText = hist !! fromEnum 'e'
-  where hist = charHistogram testText
 
 -- Decrypt plaintext with xor key
 decryptXorSimple :: String -> Int -> String
@@ -58,11 +63,11 @@ run (putResult, putError, putStatus) = do
   let testKeys = [0 .. 255]
   let scores = testKeyScores testKeys cipherText
   -- let textKeyScores = zip testKeys scores
-  let (xorKey, bestScore) = maxIndex scores 
+  let (xorKey, bestScore) = maxIndex scores
   let decryptedString = decryptXorSimple cipherText xorKey
   putStatus("Ciphertext (length " ++ show(length cipherTextHex) ++ "): " ++ cipherTextHex)
   putStatus("Ciphertext String: " ++ cipherText)
-  putStatus("XOR Key: " ++ show xorKey)
+  putStatus("XOR Key: " ++ (show xorKey) ++ " Score: " ++ (show bestScore))
   putStatus("Decrypted Output: " ++ decryptedString)
   putStatus("Expected Output (length " ++ show(length expectedOutput) ++ "): " ++ expectedOutput)
   if decryptedString == expectedOutput then putResult "OK! Expected result."
