@@ -1,27 +1,12 @@
-{-# LANGUAGE ParallelListComp #-}
-
-module Challenge3.RunChallenge (main, run, testKeyScores, englishScore, charHistogram) where
+module Challenge3.RunChallenge (main, run, testKeyScores, scoreEnglish, charHistogram) where
 
 import qualified Shared.Hex as Hex
-import Shared.XorUtils (xorStrings)
-
-type HistValue = Float
-type HistArray = [HistValue]
+import Shared.XorUtils (xorStringChar)
+import Shared.TextUtils (scoreEnglish)
+import Shared.Histogram (HistValue, HistArray, charHistogram)
 
 main :: IO ()
 main = run(putStrLn, putStrLn, putStrLn)
-
--- Given some text, returns a score for likelyhood it is english text.
--- For now we just count e's and whitespace.
-englishScore :: String -> HistValue
-englishScore testText = (e_count + wspace_count) / textLength
-  where hist = charHistogram testText
-        textLength = fromIntegral $ length testText
-        e_count = hist !! fromEnum 'e'
-        wspace_count = (hist !! fromEnum '\t') + (hist !! fromEnum '\n') + (hist !! fromEnum ' ')
-
--- Other tests: contains the word "the" , contains only printable chars, ratio of letters to non letters
-
 
 maxIndexHelper :: HistArray -> Int -> (Int, HistValue)
 maxIndexHelper [] index = (index, 0.0 :: HistValue)
@@ -33,23 +18,10 @@ maxIndexHelper hist index = if isNewMax then (index, thisVal) else (maxIndex, ma
 maxIndex :: HistArray -> (Int, HistValue)
 maxIndex hist = maxIndexHelper hist 0
 
-charHistogram :: String -> HistArray
-charHistogram "" = replicate 256 0.0
-charHistogram testText = [ if i == histIndex then succ x else x | x <- histArray | i <- [0 .. 255] ]
-  where histIndex = fromEnum $ head testText
-        histArray = charHistogram $ tail testText
-
--- Decrypt plaintext with xor key
-decryptXorSimple :: String -> Int -> String
-decryptXorSimple cipherText xorKey = xorStrings cipherText keyString
-  where textLength = length cipherText
-        keyChar = toEnum xorKey
-        keyString = replicate textLength keyChar
-
 -- Given ciphertext and a test key returns a score
 scoreKey :: String -> Int -> HistValue
-scoreKey cipherText xorKey = englishScore possiblePlaintext
-  where possiblePlaintext = decryptXorSimple cipherText xorKey
+scoreKey cipherText xorKey = scoreEnglish possiblePlaintext
+  where possiblePlaintext = xorStringChar cipherText xorKey
 
 -- Given an array of keys to test and a cipher text argument, returns
 -- a list of scores for each key.
@@ -66,10 +38,10 @@ run (putResult, putError, putStatus) = do
   let scores = testKeyScores testKeys cipherText
   -- let textKeyScores = zip testKeys scores
   let (xorKey, bestScore) = maxIndex scores
-  let decryptedString = decryptXorSimple cipherText xorKey
+  let decryptedString = xorStringChar cipherText xorKey
   putStatus("Ciphertext (length " ++ show(length cipherTextHex) ++ "): " ++ cipherTextHex)
   putStatus("Ciphertext String: " ++ cipherText)
-  putStatus("XOR Key: " ++ (show xorKey) ++ " Score: " ++ (show bestScore))
+  putStatus("XOR Key: " ++ show xorKey ++ " Score: " ++ show bestScore)
   putStatus("Decrypted Output: " ++ decryptedString)
   putStatus("Expected Output (length " ++ show(length expectedOutput) ++ "): " ++ expectedOutput)
   if decryptedString == expectedOutput then putResult "OK! Expected result."
