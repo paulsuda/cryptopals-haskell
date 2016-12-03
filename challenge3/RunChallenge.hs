@@ -1,28 +1,12 @@
-module Challenge3.RunChallenge (main, run, testKeyScores, scoreEnglish, charHistogram) where
+module Challenge3.RunChallenge (main, run) where
 
 import qualified Shared.Hex as Hex
 import Shared.XorUtils (xorStringChar)
-import Shared.TextUtils (scoreEnglish)
-import Shared.Histogram (HistValue, HistArray, charHistogram, histMax)
+import Shared.Histogram (HistValue, HistArray, histMax)
+import Shared.KeyScoring (singleByteXorKeyScores)
 
 main :: IO ()
 main = run(putStrLn, putStrLn, putStrLn)
-
--- Given ciphertext and a test key returns a score how likely it is english text
-scoreKey :: String -> Int -> HistValue
-scoreKey cipherText xorKey = scoreEnglish possiblePlaintext
-  where possiblePlaintext = xorStringChar cipherText xorKey
-
--- Given an array of keys to test and a cipher text argument, returns
--- a list of scores for each key.
-testKeyScores :: [Int] -> String -> HistArray
-testKeyScores testKeys cipherText = map (scoreKey cipherText) testKeys
-
--- Pass in a ciphertext and get a histogram of each of the 0 .. 255 possible
--- single byte xor keys related to it's likelyhood that it is english text.
-singleByteXorKeyScores :: String -> HistArray
-singleByteXorKeyScores = testKeyScores testKeys
-  where testKeys = [0 .. 255]
 
 run (putResult, putError, putStatus) = do
   cipherTextFile <- readFile "challenge3/ciphertext.txt"

@@ -5,9 +5,13 @@ module Shared.Histogram (HistValue, HistArray, charHistogram, histMax) where
 type HistValue = Float
 type HistArray = [HistValue]
 
+-- histogram of all zeroes, n elements
+zeroedHistogram :: Int -> HistArray
+zeroedHistogram n = replicate n 0.0
+
 -- Create histogram of number of occurences of each byte value in a string.
 charHistogram :: String -> HistArray
-charHistogram "" = replicate 256 0.0
+charHistogram "" = zeroedHistogram 256
 charHistogram testText = [ if i == histIndex then succ x else x | x <- histArray | i <- [0 .. 255] ]
   where histIndex = fromEnum $ head testText
         histArray = charHistogram $ tail testText
