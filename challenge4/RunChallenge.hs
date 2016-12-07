@@ -18,7 +18,6 @@ run (putResult, putError, putStatus) = do
   let cipherTextList = map Hex.decode cipherTextHexList
   expectedOutputFile <- readFile "challenge4/expected_output.txt"
   let expectedOutput = expectedOutputFile
-  let decryptedString = "foo"
   putStatus("Ciphertext Entries List: (length " ++ show(length cipherTextHexList) ++ ")")
   let samplesBestXorScores = map bestXorScore cipherTextList
   let sampleBestScores = map snd samplesBestXorScores

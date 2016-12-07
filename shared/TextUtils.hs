@@ -1,5 +1,16 @@
-module Shared.TextUtils (scoreEnglish) where
+module Shared.TextUtils (scoreEnglish, repeatToLength, subString) where
 import Shared.Histogram (HistValue, charHistogram)
+
+subString :: String -> Int -> Int -> String
+subString _ 0 0 = ""
+subString str 0 end = head str : subString (tail str) 0 (pred end)
+subString str start end = subString (tail str) (pred start) (pred end)
+
+repeatToLength :: Int -> String -> String
+repeatToLength totalLength repeatString = (concat $ replicate replicateCount repeatString) ++ subString repeatString 0 padLength
+  where replicateCount = quot totalLength repeatLength
+        padLength = rem totalLength repeatLength
+        repeatLength = length repeatString
 
 wordOccurrenceCount :: String -> String -> Int
 wordOccurrenceCount "" _ = 0
