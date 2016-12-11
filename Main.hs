@@ -5,6 +5,8 @@ import qualified Challenge2.RunChallenge
 import qualified Challenge3.RunChallenge
 import qualified Challenge4.RunChallenge
 import qualified Challenge5.RunChallenge
+import qualified Challenge6.RunChallenge
+
 import Text.PrettyPrint.ANSI.Leijen
 
 main :: IO ()
@@ -14,6 +16,7 @@ main = do
   runChallenge("Challenge 3", Challenge3.RunChallenge.run)
   -- runChallenge("Challenge 4", Challenge4.RunChallenge.run)
   runChallenge("Challenge 5", Challenge5.RunChallenge.run)
+  runChallenge("Challenge 6", Challenge6.RunChallenge.run)
 
 runChallenge (label, fn) = do
   let extendedLine = replicate (60 - length label) '-'

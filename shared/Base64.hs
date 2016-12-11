@@ -16,7 +16,7 @@ encode "" = ""
 encode (a:b:c:x) = [ encodeChar(bytes `quot` (64 ^ 3)),  encodeChar(bytes `quot` (64 ^ 2)), encodeChar(bytes `quot` 64), encodeChar bytes ] ++ encode x
   where bytes = fromEnum c + (fromEnum b * (2 ^ 8)) + (fromEnum a * (2 ^ 16))
 
-# TODO: "=" at end of short 
+-- # TODO: "=" at end of short 
 decode :: String -> String
 decode "" = ""
 decode (a:b:c:d:x) = [ toEnum(bytes `div` (2 ^ 16) `mod` 256), toEnum(bytes `div` (2 ^ 8) `mod` 256), toEnum(bytes `mod` 256) ] ++ nextStr
