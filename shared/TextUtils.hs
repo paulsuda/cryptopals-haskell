@@ -1,10 +1,23 @@
-module Shared.TextUtils (scoreEnglish, repeatToLength, subString, trimWhitespace) where
+module Shared.TextUtils (boundedSubString, scoreEnglish, repeatToLength, subString, trimWhitespace) where
 import Shared.Histogram (HistValue, charHistogram)
 
 subString :: String -> Int -> Int -> String
 subString _ 0 0 = ""
 subString str 0 end = head str : subString (tail str) 0 (pred end)
 subString str start end = subString (tail str) (pred start) (pred end)
+
+clampInt :: Int -> Int -> Int -> Int
+clampInt val low high
+  | val < low  = low
+  | val > high = high
+  | otherwise  = val
+
+boundedSubString :: String -> Int -> Int -> String
+boundedSubString str start end = subString str boundedStart boundedEnd
+  where boundedStart = clampInt start 0 max
+        boundedEnd = clampInt end boundedStart max
+        max = length str
+
 
 repeatToLength :: Int -> String -> String
 repeatToLength totalLength repeatString = concat(replicate replicateCount repeatString) ++ subString repeatString 0 padLength

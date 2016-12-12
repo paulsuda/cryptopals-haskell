@@ -1,5 +1,5 @@
 
-module Shared.Hex (decode, encode, charVal, valChar) where
+module Shared.Hex (decode, encode, charVal, valChar, encodeSeparated) where
 
 charVal :: Char -> Int
 charVal '0' = 0
@@ -36,11 +36,19 @@ valChar 13 = 'd'
 valChar 14 = 'e'
 valChar 15 = 'f'
 
+encodeByte :: Char -> String
+encodeByte c = [valChar(quot byteVal 16)] ++ [valChar(mod byteVal 16)]
+  where byteVal = fromEnum c
+
 decode :: String -> String
 decode "" = ""
 decode (a:b:x) = toEnum(charVal a  * 16 + charVal b) : decode x
 
 encode :: String -> String
 encode "" = ""
-encode (a:x) = [valChar(quot charVal 16)] ++ [valChar(mod charVal 16)] ++ encode x
-  where charVal = fromEnum a
+encode (a:x) = encodeByte a ++ encode x
+
+encodeSeparated :: String -> String -> String
+encodeSeparated "" _ = ""
+encodeSeparated (a:x) separator = encodeByte a ++ separatorPart ++ encodeSeparated x separator
+  where separatorPart = if x == "" then "" else ":"
