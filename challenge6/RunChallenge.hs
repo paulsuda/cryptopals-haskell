@@ -26,10 +26,9 @@ countOneBits :: String -> Int
 countOneBits "" = 0
 countOneBits (c:s) = countOneBitsChar c + countOneBits s
 
--- hammingDist :: String -> String -> Int
--- hammingDist = countOneBits $ xorStrings
-
-
+hammingDist :: String -> String -> Int
+hammingDist a b = countOneBits differenceBits
+  where differenceBits = xorStrings a b
 
 main :: IO ()
 main = run(putStrLn, putStrLn, putStrLn)
