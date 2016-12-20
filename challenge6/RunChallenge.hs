@@ -4,31 +4,11 @@ import qualified Shared.Base64 as Base64
 import qualified Shared.Hex as Hex
 import Shared.XorUtils (xorStrings)
 import Shared.TextUtils (boundedSubString, repeatToLength, trimWhitespace)
+import qualified Shared.BitValue as BitValue
 
 keySizeRange :: (Int, Int)
 keySizeRange = (2, 40)
 
-bitVal :: Int -> Int -> Int
-bitVal i val
-  | i >= 0 && i < 8 = (val `quot` (2 ^ i)) `mod` 2
-  | otherwise = 0
-    -- fail "Index must be between 0 and 7 inclusive for bitVal."
-
-bitValList :: Int -> [Int]
-bitValList val = [ bitVal i val | i <- [0..7] ]
-
-countOneBitsChar :: Char -> Int
-countOneBitsChar c = sum bits
-  where val = fromEnum c
-        bits = bitValList val
-
-countOneBits :: String -> Int
-countOneBits "" = 0
-countOneBits (c:s) = countOneBitsChar c + countOneBits s
-
-hammingDist :: String -> String -> Int
-hammingDist a b = countOneBits differenceBits
-  where differenceBits = xorStrings a b
 
 main :: IO ()
 main = run(putStrLn, putStrLn, putStrLn)
