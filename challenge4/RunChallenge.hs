@@ -12,6 +12,7 @@ main = run(putStrLn, putStrLn, putStrLn)
 bestXorScore :: String -> (Int, HistValue)
 bestXorScore ciphertext = histMax $ singleByteXorKeyScores ciphertext
 
+run :: (String -> IO (), String -> IO (), String -> IO ()) -> IO ()
 run (putResult, putError, putStatus) = do
   cipherTextFile <- readFile "challenge4/ciphertext.txt"
   let cipherTextHexList = lines cipherTextFile

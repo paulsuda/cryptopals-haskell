@@ -9,7 +9,7 @@ xorChars a b = toEnum $ xor aInt bInt
 
 xorStrings :: String -> String -> String
 xorStrings "" "" = ""
-xorStrings a b = xorChars (head a) (head b) : xorStrings (tail a) (tail b)
+xorStrings (a:xa) (b:xb) = xorChars a b : xorStrings xa xb
 
 -- Decrypt plaintext with xor key
 xorStringChar :: String -> Int -> String

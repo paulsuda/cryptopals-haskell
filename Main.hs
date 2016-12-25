@@ -19,7 +19,7 @@ main = do
   runChallenge("Challenge 5", Challenge5.RunChallenge.run)
   runChallenge("Challenge 6", Challenge6.RunChallenge.run)
 
-runChallenge String -> () -> IO()
+runChallenge :: (String, (String -> IO (), String -> IO (), String -> IO ()) -> IO a) -> IO ()
 runChallenge (label, fn) = do
   let extendedLine = replicate (60 - length label) '-'
   let labelText = "------- [ " ++ label ++ "] ---" ++ extendedLine
