@@ -1,6 +1,10 @@
 
-module Shared.BitValue (list, index) where
+module Shared.BitValue (list, index, hammingDist) where
 import Shared.XorUtils (xorStrings)
+
+main :: IO()
+main = 
+  putStrLn ("Hamming Dist: " ++ show(hammingDist "this is a test" "wokka wokka!!!"))
 
 index :: Int -> Int -> Int
 index i val
