@@ -15,10 +15,19 @@ encode :: String -> String
 encode "" = ""
 encode (a:b:c:x) = [ encodeChar(bytes `quot` (64 ^ 3)),  encodeChar(bytes `quot` (64 ^ 2)), encodeChar(bytes `quot` 64), encodeChar bytes ] ++ encode x
   where bytes = fromEnum c + (fromEnum b * (2 ^ 8)) + (fromEnum a * (2 ^ 16))
+encode (a:b:x) = [ encodeChar(bytes `quot` (64 ^ 3)),  encodeChar(bytes `quot` (64 ^ 2)), encodeChar(bytes `quot` 64), '=' ]
+  where bytes = (fromEnum b * (2 ^ 8)) + (fromEnum a * (2 ^ 16))
+encode (a:x) = [ encodeChar(bytes `quot` (64 ^ 3)),  encodeChar(bytes `quot` (64 ^ 2)), '=', '=' ]
+  where bytes = (fromEnum a * (2 ^ 16))
 
--- # TODO: "=" at end of short 
+
+-- # TODO: "=" at end of short
 decode :: String -> String
 decode "" = ""
+decode (a:b:"==") = [ toEnum(bytes `div` (2 ^ 16) `mod` 256) ]
+  where bytes = decodeChar a * (64 ^ 3) + decodeChar b * (64 ^ 2)
+decode (a:b:c:"=") = [ toEnum(bytes `div` (2 ^ 16) `mod` 256), toEnum(bytes `div` (2 ^ 8) `mod` 256) ]
+  where bytes = decodeChar a * (64 ^ 3) + decodeChar b * (64 ^ 2) + decodeChar c * 64
 decode (a:b:c:d:x) = [ toEnum(bytes `div` (2 ^ 16) `mod` 256), toEnum(bytes `div` (2 ^ 8) `mod` 256), toEnum(bytes `mod` 256) ] ++ nextStr
-  where bytes = decodeChar a * 64 * 64 * 64 + decodeChar b * 64 * 64 + decodeChar c * 64 + decodeChar d
+  where bytes = decodeChar a * (64 ^ 3) + decodeChar b * (64 ^ 2) + decodeChar c * 64 + decodeChar d
         nextStr = decode x
