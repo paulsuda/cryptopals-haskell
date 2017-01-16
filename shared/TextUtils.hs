@@ -35,7 +35,7 @@ scoreEnglish testText = letterE + whiteSpace + (2.0 * nonPrintable)
         textLength = fromIntegral $ length testText
         nonPrintable = 1.0 - (sum(map (hist !!) [127 .. 255]) / fromIntegral textLength)
         letterE = letterFreq 'e' / fromIntegral textLength
-        whiteSpace = letterFreq ' ' / fromIntegral textLength
+        whiteSpace = (letterFreq ' ' + letterFreq '\t' + letterFreq '\n') / fromIntegral textLength
 
 scoreEnglishHist :: String -> HistValue
 scoreEnglishHist testText = if invalidCount > 0 then -1.0 else fst chiSqScore
