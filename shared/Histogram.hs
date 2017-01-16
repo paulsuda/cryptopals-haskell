@@ -1,6 +1,6 @@
 {-# LANGUAGE ParallelListComp #-}
 
-module Shared.Histogram (HistValue, HistArray, charHistogram, histMax) where
+module Shared.Histogram (HistValue, HistArray, charHistogram, histMax, chiSquared, normalizeHist) where
 
 type HistValue = Float
 type HistArray = [HistValue]
@@ -27,3 +27,18 @@ histMaxHelper hist index = if isNewMax then (index, thisVal) else (histMax, maxV
 -- Public iterface
 histMax :: HistArray -> (Int, HistValue)
 histMax hist = histMaxHelper hist 0
+
+-- Compare using chi sq
+-- sum( (obs[i] - expected[i])^2 / expected[i] ) = x^2
+chiSquared :: HistArray -> HistArray -> (Float, Int)
+chiSquared [] [] = (0.0, 0)
+chiSquared (0.0 : expectedHist) (0.0 : observedHist) = chiSquared expectedHist observedHist
+chiSquared (0.0 : expectedHist) (bad : observedHist) = (fst remaining, succ $ snd remaining)
+  where remaining = chiSquared expectedHist observedHist
+chiSquared (expected : expectedHist) (observed : observedHist) = (thisPart + fst remaining, snd remaining)
+  where thisPart = (observed - expected) ^ 2 / expected
+        remaining = chiSquared expectedHist observedHist
+
+normalizeHist :: HistArray -> HistArray
+normalizeHist hist = map (/ totalSum) hist
+  where totalSum = sum hist

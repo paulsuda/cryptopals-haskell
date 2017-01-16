@@ -4,6 +4,7 @@ module Shared.Views (hexShow) where
 import qualified Shared.Hex as Hex
 import Shared.TextUtils (boundedSubString)
 
+-- remove unprintable chars from output for debugging data
 rawEscapeChar :: Char -> Char
 rawEscapeChar c
   | n >= 127  = '.'
@@ -17,6 +18,7 @@ rawEscape "" = ""
 rawEscape s = thisChar : rawEscape (tail s)
   where thisChar = rawEscapeChar (head s)
 
+-- Show a display of hex codes and ascii chars side by side.
 hexShow :: String -> String
 hexShow "" = ""
 hexShow s = " | " ++ rawPart ++ " | " ++ "  " ++ hexPart ++ "\n" ++ hexShow remainingData
