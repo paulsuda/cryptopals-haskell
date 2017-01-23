@@ -1,6 +1,8 @@
 {-# LANGUAGE ParallelListComp #-}
 
-module Shared.Histogram (HistValue, HistArray, charHistogram, histMax, chiSquared, normalizeHist) where
+module Shared.Histogram (HistValue, HistArray, charHistogram,
+                         histMax, chiSquared, normalizeHist,
+                         histSet, histCombine) where
 
 type HistValue = Float
 type HistArray = [HistValue]
@@ -9,10 +11,18 @@ type HistArray = [HistValue]
 zeroedHistogram :: Int -> HistArray
 zeroedHistogram n = replicate n 0.0
 
+-- Apply a function to the nth value in the histogram
+histSet :: (HistValue -> HistValue) -> Int -> HistArray -> HistArray
+histSet fn index hist = firstPart ++ [fn value] ++ lastPart
+  where firstPart = take index hist
+        remainingPart = drop index hist
+        lastPart = tail remainingPart
+        value = head remainingPart
+
 -- Create histogram of number of occurences of each byte value in a string.
 charHistogram :: String -> HistArray
 charHistogram "" = zeroedHistogram 256
-charHistogram testText = [ if i == histIndex then succ x else x | x <- histArray | i <- [0 .. 255] ]
+charHistogram testText = histSet succ histIndex histArray
   where histIndex = fromEnum $ head testText
         histArray = charHistogram $ tail testText
 
@@ -42,3 +52,9 @@ chiSquared (expected : expectedHist) (observed : observedHist) = (thisPart + fst
 normalizeHist :: HistArray -> HistArray
 normalizeHist hist = map (/ totalSum) hist
   where totalSum = sum hist
+
+-- Combines two values into one by adding them. Zeroes out the "from" value.
+histCombine :: HistArray -> Int -> Int -> HistArray
+histCombine hist toIndex fromIndex = histSet (+ fromValue) toIndex clearedHist
+  where fromValue = hist !! fromIndex
+        clearedHist = histSet (const 0) fromIndex hist
