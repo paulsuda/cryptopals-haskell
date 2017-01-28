@@ -1,4 +1,4 @@
-module Shared.TextUtils (boundedSubString, scoreEnglish, scoreEnglishHist, englishHist, repeatToLength, subString, trimWhitespace) where
+module Shared.TextUtils (boundedSubString, scoreEnglishFrequency, scoreEnglishHist, englishHist, repeatToLength, subString, trimWhitespace) where
 
 import Shared.Histogram (HistValue, HistArray, charHistogram, normalizeHist, chiSquared, histCombine)
 
@@ -26,16 +26,19 @@ repeatToLength totalLength repeatString = concat(replicate replicateCount repeat
         padLength = rem totalLength repeatLength
         repeatLength = length repeatString
 
+letterFrequency :: HistArray -> Char -> HistValue
+letterFrequency hist char = hist !! (fromEnum char)
+
 -- Given some text, returns a score for likelyhood it is english text.
 -- For now we just count e's and whitespace.
-scoreEnglish :: String -> HistValue
-scoreEnglish testText = letterE + whiteSpace + (2.0 * nonPrintable)
+scoreEnglishFrequency :: String -> HistValue
+scoreEnglishFrequency testText = letterE + whiteSpace + (2.0 * nonPrintable)
   where hist = charHistogram testText
-        letterFreq = (!!) hist . fromEnum
+        frequencyOf = letterFrequency hist
         textLength = fromIntegral $ length testText
-        nonPrintable = 1.0 - (sum(map (hist !!) [127 .. 255]) / fromIntegral textLength)
-        letterE = letterFreq 'e' / fromIntegral textLength
-        whiteSpace = (letterFreq ' ' + letterFreq '\t' + letterFreq '\n') / fromIntegral textLength
+        nonPrintable = 1.0 - (sum(map (hist !!) [127 .. 255]) / textLength)
+        letterE = frequencyOf 'e' / textLength
+        whiteSpace = (frequencyOf ' ' + frequencyOf '\t' + frequencyOf '\n') / textLength
 
 scoreEnglishHist :: String -> HistValue
 scoreEnglishHist testText = if invalidCount > 0 then -1.0 else chiSqScore

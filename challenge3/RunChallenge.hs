@@ -4,6 +4,7 @@ import qualified Shared.Hex as Hex
 import Shared.XorUtils (xorStringChar)
 import Shared.Histogram (HistValue, HistArray, histMax)
 import Shared.KeyScoring (singleByteXorKeyScores)
+import Shared.Views (histShow)
 
 main :: IO ()
 main = run(putStrLn, putStrLn, putStrLn)
@@ -17,6 +18,7 @@ run (putResult, putError, putStatus) = do
   let scores = singleByteXorKeyScores cipherText
   let (xorKey, bestScore) = histMax scores
   let decryptedString = xorStringChar cipherText xorKey
+  putStatus(histShow scores)
   putStatus("Ciphertext (length " ++ show(length cipherTextHex) ++ "): " ++ cipherTextHex)
   putStatus("Ciphertext String: " ++ cipherText)
   putStatus("XOR Key: " ++ show xorKey ++ " Score: " ++ show bestScore)

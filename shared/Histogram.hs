@@ -1,7 +1,7 @@
 {-# LANGUAGE ParallelListComp #-}
 
 module Shared.Histogram (HistValue, HistArray, charHistogram,
-                         histMax, chiSquared, normalizeHist,
+                         histMax, chiSquared, normalizeHist, unitizeHist,
                          histSet, histCombine) where
 
 type HistValue = Float
@@ -49,6 +49,12 @@ chiSquared (expected : expectedHist) (observed : observedHist) = (thisPart + fst
   where thisPart = (observed - expected) ^ 2 / expected
         remaining = chiSquared expectedHist observedHist
 
+-- Scale all histogram values so that the largest of all values equals 1.0
+unitizeHist :: HistArray -> HistArray
+unitizeHist hist = map (/ maxValue) hist
+  where maxValue = maximum hist
+
+-- Scale all histogram values so that the sum of all values equals 1.0
 normalizeHist :: HistArray -> HistArray
 normalizeHist hist = map (/ totalSum) hist
   where totalSum = sum hist

@@ -1,12 +1,12 @@
 module Shared.KeyScoring (singleByteXorKeyScores) where
 
 import Shared.Histogram (HistValue, HistArray)
-import Shared.TextUtils (scoreEnglish)
+import Shared.TextUtils (scoreEnglishFrequency)
 import Shared.XorUtils (xorStringChar)
 
 -- Given ciphertext and a test key returns a score how likely it is english text
 scoreKey :: String -> Int -> HistValue
-scoreKey cipherText xorKey = scoreEnglish possiblePlaintext
+scoreKey cipherText xorKey = scoreEnglishFrequency possiblePlaintext
   where possiblePlaintext = xorStringChar cipherText xorKey
 
 -- Given an array of keys to test and a cipher text argument, returns
