@@ -61,6 +61,6 @@ normalizeHist hist = map (/ totalSum) hist
 
 -- Combines two values into one by adding them. Zeroes out the "from" value.
 histCombine :: HistArray -> Int -> Int -> HistArray
-histCombine hist toIndex fromIndex = histSet (+ fromValue) toIndex clearedHist
+histCombine hist fromIndex toIndex = histSet (+ fromValue) toIndex clearedHist
   where fromValue = hist !! fromIndex
         clearedHist = histSet (const 0) fromIndex hist

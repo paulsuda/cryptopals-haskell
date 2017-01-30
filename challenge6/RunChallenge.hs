@@ -4,10 +4,10 @@ module Challenge6.RunChallenge (run, main) where
 import qualified Shared.Base64 as Base64
 import Shared.XorUtils (xorStrings)
 import Shared.BitValue (hammingDist)
-import Shared.TextUtils (repeatToLength, trimWhitespace, subString)
+import Shared.TextUtils (repeatToLength, trimWhitespace, subString, englishHist, charHistCombineWhiteSpace, charHistCombineLowerToUpper)
 import qualified Shared.BitValue as BitValue
-import Shared.Views (hexShow)
-import Shared.Histogram (HistArray, HistValue, histMax)
+import Shared.Views (hexShow, histShow, histValuesShow)
+import Shared.Histogram (HistArray, HistValue, histMax, chiSquared)
 import Shared.KeyScoring (singleByteXorKeyScores)
 
 
@@ -61,6 +61,7 @@ run (putResult, putError, putStatus) = do
   let (solvedKey, solvedKeyScore) = solveRepeatingKey cipherText
   let xorKeyRepeated = repeatToLength (length cipherText) solvedKey
   let plainText = xorStrings cipherText xorKeyRepeated
+  putStatus(histShow englishHist)
   putStatus("Plaintext:\n" ++ hexShow plainText)
   putStatus("Ciphertext: (length " ++ show(length cipherText) ++ ")")
   putStatus("Solved Key: " ++ solvedKey ++ " (length " ++ show(length solvedKey) ++ ", score " ++ show solvedKeyScore ++ ")")

@@ -1,12 +1,12 @@
 
-module Shared.Views (hexShow, histShow) where
+module Shared.Views (hexShow, histShow, histValuesShow) where
 
 import qualified Shared.Hex as Hex
 import Shared.TextUtils (boundedSubString)
 import Shared.Histogram (HistValue, HistArray)
 
 indexWidth = 5
-valuesWidth = 11
+valuesWidth = 14
 valuesChartWidth =  60
 
 -- remove unprintable chars from output for debugging data
@@ -36,8 +36,7 @@ hexShow s = " | " ++ rawPart ++ " | " ++ "  " ++ hexPart ++ "\n" ++ hexShow rema
 histShow :: HistArray -> String
 histShow hist = summary ++ "\n" ++ values
   where summary = histSummary hist
-        values = histValuesShow hist [0 .. histSize]
-        histSize = length hist
+        values = histValuesShow hist [0 .. length hist]
 
 padding :: Int -> Char -> String -> String
 padding w padChar str = replicate (w - length str) padChar
@@ -50,14 +49,15 @@ rightPad w str = str ++ padding w ' ' str
 
 histValueChartLine :: Int -> HistValue -> HistValue -> String
 histValueChartLine index value max =
-  leftPad indexWidth (show index) ++ " | " ++
+  leftPad indexWidth indexLabel ++ " | " ++
   rightPad valuesWidth (show value) ++
   replicate (valueChartWidth value) '*' ++ "\n"
   where valueChartWidth = floor . (* valuesChartWidth) . (/ max)
+        indexLabel = show index ++ " " ++ [rawEscapeChar(toEnum index)]
 
 histValuesShow :: HistArray -> [Int] -> String
 histValuesShow hist indexes = foldl (\acc (index, value) -> acc ++
-                                histValueChartLine index value (maximum hist)) "" (zip [0 .. length hist] hist)
+                                histValueChartLine index value (maximum hist)) "" (zip indexes hist)
 
 histSummary :: HistArray -> String
 histSummary hist = "Histogram Summary [ Zero Values: " ++ show zeroes ++
