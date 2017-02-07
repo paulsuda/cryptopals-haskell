@@ -2,7 +2,7 @@ module Challenge3.RunChallenge (main, run) where
 
 import qualified Shared.Hex as Hex
 import Shared.XorUtils (xorStringChar)
-import Shared.Histogram (HistValue, HistArray, histMax)
+import Shared.Histogram (HistValue, HistArray, histMin)
 import Shared.KeyScoring (singleByteXorKeyScores)
 import Shared.Views (histShow)
 
@@ -16,9 +16,9 @@ run (putResult, putError, putStatus) = do
   expectedOutputFile <- readFile "challenge3/expected_output.txt"
   let expectedOutput = concat $ lines expectedOutputFile
   let scores = singleByteXorKeyScores cipherText
-  let (xorKey, bestScore) = histMax scores
+  let (xorKey, bestScore) = histMin scores
   let decryptedString = xorStringChar cipherText xorKey
-  putStatus(histShow scores)
+  -- putStatus(histShow scores)
   putStatus("Ciphertext (length " ++ show(length cipherTextHex) ++ "): " ++ cipherTextHex)
   putStatus("Ciphertext String: " ++ cipherText)
   putStatus("XOR Key: " ++ show xorKey ++ " Score: " ++ show bestScore)

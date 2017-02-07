@@ -1,8 +1,7 @@
-{-# LANGUAGE ParallelListComp #-}
 
 module Shared.Histogram (HistValue, HistArray, charHistogram,
-                         histMax, chiSquared, normalizeHist, unitizeHist,
-                         histSet, histCombine) where
+                         histMax, histMin, chiSquared, normalizeHist, unitizeHist,
+                         histSet, histCombine, meanSquaredError) where
 
 type HistValue = Float
 type HistArray = [HistValue]
@@ -27,16 +26,30 @@ charHistogram testText = histSet succ histIndex histArray
         histArray = charHistogram $ tail testText
 
 -- The index of the maximum value in the histogram.
-histMaxHelper :: HistArray -> Int -> (Int, HistValue)
-histMaxHelper [] index = (index, 0.0 :: HistValue)
-histMaxHelper hist index = if isNewMax then (index, thisVal) else (histMax, maxValue)
+histCompareHelper :: HistArray -> Int -> (HistValue -> HistValue -> Bool) -> (Int, HistValue)
+histCompareHelper [lastVal] lastIndex compareFn = (lastIndex , lastVal)
+histCompareHelper hist index compareFn = if isNewMax then (index, thisVal) else (histMax, maxValue)
   where thisVal = head hist
-        (histMax, maxValue) = histMaxHelper (tail hist) (succ index)
-        isNewMax = thisVal > maxValue
+        (histMax, maxValue) = histCompareHelper (tail hist) (succ index) compareFn
+        isNewMax = compareFn thisVal maxValue
 
 -- Public iterface
 histMax :: HistArray -> (Int, HistValue)
-histMax hist = histMaxHelper hist 0
+histMax hist = histCompareHelper hist 0 (>)
+
+histMin :: HistArray -> (Int, HistValue)
+histMin hist = histCompareHelper hist 0 (<)
+
+diffHist :: HistArray -> HistArray -> HistArray
+diffHist [] [] = []
+diffHist a b = error : diffHist (tail a) (tail b)
+  where error = head a - head b
+
+
+meanSquaredError :: HistArray -> HistArray -> Float
+meanSquaredError a b = sum squaredErrors / fromIntegral(length squaredErrors)
+  where errors = diffHist a b
+        squaredErrors = map (^ 2) errors
 
 -- Compare using chi sq
 -- sum( (obs[i] - expected[i])^2 / expected[i] ) = x^2

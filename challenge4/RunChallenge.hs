@@ -2,7 +2,7 @@
 module Challenge4.RunChallenge (main, run) where
 
 import qualified Shared.Hex as Hex
-import Shared.Histogram (HistValue, HistArray, histMax)
+import Shared.Histogram (HistValue, HistArray, histMin)
 import Shared.KeyScoring (singleByteXorKeyScores)
 import Shared.XorUtils (xorStringChar)
 
@@ -10,7 +10,7 @@ main :: IO ()
 main = run(putStrLn, putStrLn, putStrLn)
 
 bestXorScore :: String -> (Int, HistValue)
-bestXorScore ciphertext = histMax $ singleByteXorKeyScores ciphertext
+bestXorScore ciphertext = histMin $ singleByteXorKeyScores ciphertext
 
 run :: (String -> IO (), String -> IO (), String -> IO ()) -> IO ()
 run (putResult, putError, putStatus) = do
@@ -21,9 +21,8 @@ run (putResult, putError, putStatus) = do
   let expectedOutput = expectedOutputFile
   putStatus("Ciphertext Entries List: (length " ++ show(length cipherTextHexList) ++ ")")
   let samplesBestXorScores = map bestXorScore cipherTextList
-  let sampleBestScores = map snd samplesBestXorScores
-  let sampleBestKeys = map fst samplesBestXorScores
-  let (bestSampleIndex, bestSampleScore) = histMax sampleBestScores
+  let (sampleBestKeys, sampleBestScores) = unzip samplesBestXorScores
+  let (bestSampleIndex, bestSampleScore) = histMin sampleBestScores
   let bestXorKey = sampleBestKeys !! bestSampleIndex
   let bestCipherText = cipherTextList !! bestSampleIndex
   let decryptedString = xorStringChar bestCipherText bestXorKey

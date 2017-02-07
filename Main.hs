@@ -12,11 +12,11 @@ import Text.PrettyPrint.ANSI.Leijen
 
 main :: IO ()
 main = do
-  -- runChallenge("Challenge 1", Challenge1.RunChallenge.run)
-  -- runChallenge("Challenge 2", Challenge2.RunChallenge.run)
-  -- runChallenge("Challenge 3", Challenge3.RunChallenge.run)
-  -- runChallenge("Challenge 4", Challenge4.RunChallenge.run)
-  -- runChallenge("Challenge 5", Challenge5.RunChallenge.run)
+  runChallenge("Challenge 1", Challenge1.RunChallenge.run)
+  runChallenge("Challenge 2", Challenge2.RunChallenge.run)
+  runChallenge("Challenge 3", Challenge3.RunChallenge.run)
+  runChallenge("Challenge 4", Challenge4.RunChallenge.run)
+  runChallenge("Challenge 5", Challenge5.RunChallenge.run)
   runChallenge("Challenge 6", Challenge6.RunChallenge.run)
 
 runChallenge :: (String, (String -> IO (), String -> IO (), String -> IO ()) -> IO a) -> IO ()

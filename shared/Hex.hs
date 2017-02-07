@@ -35,6 +35,7 @@ valChar 12 = 'c'
 valChar 13 = 'd'
 valChar 14 = 'e'
 valChar 15 = 'f'
+valChar _ = '*'
 
 encodeByte :: Char -> String
 encodeByte c = [valChar(quot byteVal 16)] ++ [valChar(mod byteVal 16)]

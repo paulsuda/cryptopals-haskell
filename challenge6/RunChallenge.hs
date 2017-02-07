@@ -7,7 +7,7 @@ import Shared.BitValue (hammingDist)
 import Shared.TextUtils (repeatToLength, trimWhitespace, subString, englishHist, charHistCombineWhiteSpace, charHistCombineLowerToUpper)
 import qualified Shared.BitValue as BitValue
 import Shared.Views (hexShow, histShow, histValuesShow)
-import Shared.Histogram (HistArray, HistValue, histMax, chiSquared)
+import Shared.Histogram (HistArray, HistValue, histMax, histMin, chiSquared)
 import Shared.KeyScoring (singleByteXorKeyScores)
 
 
@@ -18,21 +18,17 @@ main :: IO ()
 main = run(putStrLn, putStrLn, putStrLn)
 
 normalizedEditDist :: String -> Int -> HistValue
-normalizedEditDist cipherText keySize = fromIntegral editDist / fromIntegral keySize
-  where firstChunk = subString cipherText 0 keySize
-        secondChunk = subString cipherText keySize (2 * keySize)
-        editDist = hammingDist firstChunk secondChunk
+normalizedEditDist cipherText keySize = editDist / fromIntegral keySize
+  where chunk i = subString cipherText (keySize * i) (keySize * succ i)
+        chunkEditDist i = hammingDist (chunk $ i * 2) (chunk $ succ $ i * 2)
+        editDistList = map (fromIntegral . chunkEditDist) [0 .. 20]
+        editDist = (sum editDistList) / 20.0
 
 keySizeHistogram :: String -> HistArray
 keySizeHistogram cipherText = padding ++ hist
   where hist = map (normalizedEditDist cipherText) keySizeRange
-        padding = replicate firstKeySize 0.0
+        padding = replicate firstKeySize (9999999.0)
         firstKeySize = head keySizeRange
-
-solveRepeatingKey :: String -> (String, HistValue)
-solveRepeatingKey cipherText = solveForKeySize cipherText bestKeySize
-  where (bestKeySize, bestScore) = histMax keySizeDistHist
-        keySizeDistHist = keySizeHistogram cipherText
 
 chunkString :: String -> Int -> Int -> String
 chunkString str keySize index
@@ -41,30 +37,31 @@ chunkString str keySize index
   where charAtIndex = str !! index
         remainingStr = drop keySize str
 
-
-
 solveForKeySize :: String -> Int -> (String, HistValue)
 solveForKeySize cipherText keySize = (solvedKey, scoreAvg)
-  where keyScores = map (histMax . singleByteXorKeyScores . chunkString cipherText keySize) [0 .. keySize]
+  where keyScores = map (histMin . singleByteXorKeyScores . chunkString cipherText keySize) [0 .. (keySize - 1)]
         scoreAvg = sum $ map snd keyScores
         solvedKey = map (toEnum . fst) keyScores
 
-
+solveRepeatingKey :: String -> (String, HistValue)
+solveRepeatingKey cipherText = solveForKeySize cipherText bestKeySize
+  where (bestKeySize, bestScore) = histMin keySizeDistHist
+        keySizeDistHist = keySizeHistogram cipherText
 
 run :: (String -> IO(), String -> IO(), String -> IO()) -> IO()
 run (putResult, putError, putStatus) = do
   cipherTextFile <- readFile "challenge6/ciphertext.txt"
   let cipherTextBase64 = trimWhitespace $ concat $ lines cipherTextFile
   let cipherText = Base64.decode cipherTextBase64
-  expectedOutputFile <- readFile "challenge6/expected_output.txt"
-  let expectedOutput = concat $ lines expectedOutputFile
+  expectedOutputFile <- readFile "challenge6/expected_key.txt"
+  let expectedKey = concat $ lines expectedOutputFile
   let (solvedKey, solvedKeyScore) = solveRepeatingKey cipherText
   let xorKeyRepeated = repeatToLength (length cipherText) solvedKey
-  let plainText = xorStrings cipherText xorKeyRepeated
-  putStatus(histShow englishHist)
+  let plainText = xorStrings cipherText xorKeyRepeated :: String
+  -- putStatus(histShow englishHist)
   putStatus("Plaintext:\n" ++ hexShow plainText)
   putStatus("Ciphertext: (length " ++ show(length cipherText) ++ ")")
-  putStatus("Solved Key: " ++ solvedKey ++ " (length " ++ show(length solvedKey) ++ ", score " ++ show solvedKeyScore ++ ")")
-  putStatus("Expected Output: (length " ++ show(length expectedOutput) ++ ") '" ++ expectedOutput ++ "'")
-  if plainText == expectedOutput then putResult "OK! Expected result."
+  putStatus("Solved Key: '" ++ solvedKey ++ "' (length " ++ show(length solvedKey) ++ ", score " ++ show solvedKeyScore ++ ")")
+  putStatus("Expected Key: (length " ++ show(length expectedKey) ++ ") '" ++ expectedKey ++ "'")
+  if solvedKey == expectedKey then putResult "OK! Expected result."
   else putError "ERROR! Result not as expected."

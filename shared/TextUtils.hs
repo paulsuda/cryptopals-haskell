@@ -3,7 +3,7 @@ module Shared.TextUtils (boundedSubString, scoreEnglishFrequency,
   charHistCombineWhiteSpace, charHistCombineLowerToUpper
 ) where
 
-import Shared.Histogram (HistValue, HistArray, charHistogram, normalizeHist, chiSquared, histCombine)
+import Shared.Histogram (HistValue, HistArray, charHistogram, normalizeHist, chiSquared, meanSquaredError, histCombine)
 
 subString :: String -> Int -> Int -> String
 subString _ 0 0 = ""
@@ -44,14 +44,17 @@ scoreEnglishFrequency testText = letterE + whiteSpace + nonPrintable
         whiteSpace = (frequencyOf ' ' + frequencyOf '\t' + frequencyOf '\n') / textLength
 
 scoreEnglishHist :: String -> HistValue
-scoreEnglishHist testText = if invalidCount > 0 then -1.0 else chiSqScore
+scoreEnglishHist testText = if invalidCount > 0 then 1000.0 + (fromIntegral invalidCount) else chiSqScore
   where histPreprocess = normalizeHist . charHistCombineLowerToUpper . charHistCombineWhiteSpace
-        observed = histPreprocess $ charHistogram testText
+        observed = histPreprocess (charHistogram testText)
         expected = histPreprocess englishHist
         (chiSqScore, invalidCount) = chiSquared expected observed
 
--- Other tests: contains the word "the" , contains only printable chars, ratio of letters to non letters
-
+-- scoreEnglishHist testText = 1.0 - mse
+--   where histPreprocess = normalizeHist . charHistCombineLowerToUpper . charHistCombineWhiteSpace
+--         observed = histPreprocess (charHistogram testText)
+--         expected = histPreprocess englishHist
+--         mse = meanSquaredError expected observed
 
 isWhitespace :: Char -> Bool
 isWhitespace c = c == ' ' || c == '\n' || c == '\t'
