@@ -6,6 +6,8 @@ import qualified Challenge3.RunChallenge
 import qualified Challenge4.RunChallenge
 import qualified Challenge5.RunChallenge
 import qualified Challenge6.RunChallenge
+import qualified Challenge7.RunChallenge
+
 import Data.Time.Clock (getCurrentTime, diffUTCTime)
 
 import Text.PrettyPrint.ANSI.Leijen
@@ -18,6 +20,7 @@ main = do
   runChallenge("Challenge 4", Challenge4.RunChallenge.run)
   runChallenge("Challenge 5", Challenge5.RunChallenge.run)
   runChallenge("Challenge 6", Challenge6.RunChallenge.run)
+  runChallenge("Challenge 7", Challenge6.RunChallenge.run)
 
 runChallenge :: (String, (String -> IO (), String -> IO (), String -> IO ()) -> IO a) -> IO ()
 runChallenge (label, fn) = do
