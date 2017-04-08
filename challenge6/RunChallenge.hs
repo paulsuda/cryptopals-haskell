@@ -10,12 +10,11 @@ import Shared.Views (hexShow, histShow, histValuesShow)
 import Shared.Histogram (HistArray, HistValue, histMax, histMin, chiSquared)
 import Shared.KeyScoring (singleByteXorKeyScores)
 
-
 keySizeRange :: [Int]
 keySizeRange = [2 .. 40]
 
 main :: IO ()
-main = run(putStrLn, putStrLn, putStrLn)
+main = run putStrLn putStrLn putStrLn
 
 normalizedEditDist :: String -> Int -> HistValue
 normalizedEditDist cipherText keySize = editDist / fromIntegral keySize
@@ -48,8 +47,8 @@ solveRepeatingKey cipherText = solveForKeySize cipherText bestKeySize
   where (bestKeySize, bestScore) = histMin keySizeDistHist
         keySizeDistHist = keySizeHistogram cipherText
 
-run :: (String -> IO(), String -> IO(), String -> IO()) -> IO()
-run (putResult, putError, putStatus) = do
+run :: (String -> IO()) -> (String -> IO()) -> (String -> IO()) -> IO()
+run putResult putError putStatus = do
   cipherTextFile <- readFile "challenge6/ciphertext.txt"
   let cipherTextBase64 = trimWhitespace $ concat $ lines cipherTextFile
   let cipherText = Base64.decode cipherTextBase64

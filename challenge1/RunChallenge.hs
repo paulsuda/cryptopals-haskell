@@ -4,9 +4,9 @@ import qualified Shared.Hex as Hex
 import qualified Shared.Base64 as Base64
 
 main :: IO ()
-main = run(putStrLn, putStrLn, putStrLn)
+main = run putStrLn putStrLn putStrLn
 
-run (putResult, putError, putStatus) = do
+run putResult putError putStatus = do
   fileInput <- readFile "challenge1/input.txt"
   let cleanedInput = concat $ lines fileInput
   fileExpectedOutput <- readFile "challenge1/expected_output.txt"

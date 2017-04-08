@@ -16,10 +16,10 @@ module Challenge7.RunChallenge (main, run) where
 -- secretKey = "YELLOW SUBMARINE" :: ByteString
 
 main :: IO ()
-main = run(putStrLn, putStrLn, putStrLn)
+main = run putStrLn putStrLn putStrLn
 
 
-run (putResult, putError, putStatus) = do
+run putResult putError putStatus = do
 
   cipherTextFile <- readFile "challenge7/ciphertext.txt"
   -- let plainText = trimWhitespace plainTextFile

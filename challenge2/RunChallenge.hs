@@ -4,9 +4,9 @@ import qualified Shared.Hex as Hex
 import Shared.XorUtils (xorStrings)
 
 main :: IO ()
-main = run(putStrLn, putStrLn, putStrLn)
+main = run putStrLn putStrLn putStrLn
 
-run (putResult, putError, putStatus) = do
+run putResult putError putStatus = do
   startingDataFile <- readFile "challenge2/starting_data.txt"
   expectedOutputFile <- readFile "challenge2/expected_output.txt"
   xorDataFile <- readFile "challenge2/xor_data.txt"

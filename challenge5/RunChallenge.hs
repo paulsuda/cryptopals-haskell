@@ -5,9 +5,9 @@ import Shared.XorUtils (xorStrings)
 import Shared.TextUtils (repeatToLength, trimWhitespace)
 
 main :: IO ()
-main = run(putStrLn, putStrLn, putStrLn)
+main = run putStrLn putStrLn putStrLn
 
-run (putResult, putError, putStatus) = do
+run putResult putError putStatus = do
   plainTextFile <- readFile "challenge5/plaintext.txt"
   let plainText = trimWhitespace plainTextFile
   expectedOutputFile <- readFile "Challenge5/expected_output.txt"

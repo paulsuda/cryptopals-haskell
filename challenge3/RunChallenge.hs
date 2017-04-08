@@ -7,9 +7,9 @@ import Shared.KeyScoring (singleByteXorKeyScores)
 import Shared.Views (histShow)
 
 main :: IO ()
-main = run(putStrLn, putStrLn, putStrLn)
+main = run putStrLn putStrLn putStrLn
 
-run (putResult, putError, putStatus) = do
+run putResult putError putStatus = do
   cipherTextFile <- readFile "challenge3/ciphertext.txt"
   let cipherTextHex =  concat $ lines cipherTextFile
   let cipherText = Hex.decode cipherTextHex
