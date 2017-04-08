@@ -2,11 +2,12 @@
 module Challenge7.RunChallenge (main, run) where
 
 import Shared.Challenge (ChallengeRunner)
+import Shared.Base64 as Base64
 
 import qualified Data.ByteString.Char8
 -- import qualified Data.ByteString.Lazy as L
 -- import Data.ByteString (ByteString)
-import Crypto.Cipher.AES (AES256, AES128)
+import Crypto.Cipher.AES (AES128)
 import Crypto.Cipher.Types (BlockCipher(..), Cipher(..),nullIV)
 import Crypto.Error (throwCryptoError, CryptoFailable(..))
 
@@ -16,8 +17,8 @@ main = run putStrLn putStrLn putStrLn
 type Key = Data.ByteString.Char8.ByteString
 
 secretKey :: Key
-secretKey = Data.ByteString.Char8.pack "12-456-89A-CDE-012-456-89A-CDE-"
--- secretKey = "YELLOW SUBMARINE" :: ByteString
+-- secretKey = Data.ByteString.Char8.pack "12-456-89A-CDE-012-456-89A-CDE-"
+secretKey = Data.ByteString.Char8.pack "YELLOW SUBMARINE"
 
 
 cipherInitNoErr :: BlockCipher c => Key -> c
@@ -31,17 +32,10 @@ cipherInitNoErr k = case cipherInit k of
 run :: ChallengeRunner
 run putResult putError putStatus = do
   cipherTextFile <- readFile "challenge7/ciphertext.txt"
-  let cipherText = Data.ByteString.Char8.pack cipherTextFile
-  let ctx = cipherInitNoErr secretKey :: AES256
-  let plainText = ctrCombine ctx nullIV cipherText
+  let cipherText = Data.ByteString.Char8.pack $ Base64.decode cipherTextFile
+  let ctx = cipherInitNoErr secretKey :: AES128
+  let plainText = (ecbDecrypt ctx) cipherText
   Data.ByteString.Char8.putStrLn plainText
-  -- let ctx = cipherInitNoErr (cipherMakeKey (undefined :: AES256) secretKey)
 
-  -- let cipher = (throwCryptoError $ cipherInit secretKey) :: AES128
-  -- let cipherText =  cipherTextFile
-  -- let iv = secretKey
-  -- let secret = cipherMakeKey (undefined :: AES256) secret
-  -- let plainText = cbcDecrypt cipher iv cipherText
-  -- let plainText = trimWhitespace plainTextFile
   if False then putResult "OK! Expected result."
   else putError "ERROR! Result not as expected."
