@@ -1,6 +1,7 @@
 
 module Challenge4.RunChallenge (main, run) where
 
+import Shared.Challenge (ChallengeRunner)
 import qualified Shared.Hex as Hex
 import Shared.Histogram (HistValue, HistArray, histMin)
 import Shared.KeyScoring (singleByteXorKeyScores)
@@ -12,7 +13,7 @@ main = run putStrLn putStrLn putStrLn
 bestXorScore :: String -> (Int, HistValue)
 bestXorScore ciphertext = histMin $ singleByteXorKeyScores ciphertext
 
-run :: (String -> IO ()) -> (String -> IO ()) -> (String -> IO ()) -> IO ()
+run :: ChallengeRunner
 run putResult putError putStatus = do
   cipherTextFile <- readFile "challenge4/ciphertext.txt"
   let cipherTextHexList = lines cipherTextFile

@@ -1,11 +1,13 @@
 module Challenge1.RunChallenge (main, run) where
 
+import Shared.Challenge (ChallengeRunner)
 import qualified Shared.Hex as Hex
 import qualified Shared.Base64 as Base64
 
 main :: IO ()
 main = run putStrLn putStrLn putStrLn
 
+run :: ChallengeRunner
 run putResult putError putStatus = do
   fileInput <- readFile "challenge1/input.txt"
   let cleanedInput = concat $ lines fileInput

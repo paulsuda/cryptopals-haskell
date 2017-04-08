@@ -2,13 +2,13 @@
 module Challenge6.RunChallenge (run, main) where
 
 import qualified Shared.Base64 as Base64
-import Shared.XorUtils (xorStrings)
-import Shared.BitValue (hammingDist)
-import Shared.TextUtils (repeatToLength, trimWhitespace, subString, englishHist, charHistCombineWhiteSpace, charHistCombineLowerToUpper)
 import qualified Shared.BitValue as BitValue
-import Shared.Views (hexShow, histShow, histValuesShow)
+import Shared.Challenge (ChallengeRunner)
 import Shared.Histogram (HistArray, HistValue, histMax, histMin, chiSquared)
 import Shared.KeyScoring (singleByteXorKeyScores)
+import Shared.TextUtils (repeatToLength, trimWhitespace, subString, englishHist, charHistCombineWhiteSpace, charHistCombineLowerToUpper)
+import Shared.Views (hexShow, histShow, histValuesShow)
+import Shared.XorUtils (xorStrings)
 
 keySizeRange :: [Int]
 keySizeRange = [2 .. 40]
@@ -19,7 +19,7 @@ main = run putStrLn putStrLn putStrLn
 normalizedEditDist :: String -> Int -> HistValue
 normalizedEditDist cipherText keySize = editDist / fromIntegral keySize
   where chunk i = subString cipherText (keySize * i) (keySize * succ i)
-        chunkEditDist i = hammingDist (chunk $ i * 2) (chunk $ succ $ i * 2)
+        chunkEditDist i = BitValue.hammingDist (chunk $ i * 2) (chunk $ succ $ i * 2)
         editDistList = map (fromIntegral . chunkEditDist) [0 .. 20]
         editDist = (sum editDistList) / 20.0
 
@@ -47,7 +47,7 @@ solveRepeatingKey cipherText = solveForKeySize cipherText bestKeySize
   where (bestKeySize, bestScore) = histMin keySizeDistHist
         keySizeDistHist = keySizeHistogram cipherText
 
-run :: (String -> IO()) -> (String -> IO()) -> (String -> IO()) -> IO()
+run :: ChallengeRunner
 run putResult putError putStatus = do
   cipherTextFile <- readFile "challenge6/ciphertext.txt"
   let cipherTextBase64 = trimWhitespace $ concat $ lines cipherTextFile

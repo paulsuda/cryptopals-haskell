@@ -1,11 +1,13 @@
 module Challenge2.RunChallenge (main, run) where
 
+import Shared.Challenge (ChallengeRunner)
 import qualified Shared.Hex as Hex
 import Shared.XorUtils (xorStrings)
 
 main :: IO ()
 main = run putStrLn putStrLn putStrLn
 
+run :: ChallengeRunner
 run putResult putError putStatus = do
   startingDataFile <- readFile "challenge2/starting_data.txt"
   expectedOutputFile <- readFile "challenge2/expected_output.txt"

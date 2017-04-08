@@ -1,14 +1,16 @@
 module Challenge3.RunChallenge (main, run) where
 
+import Shared.Challenge (ChallengeRunner)
 import qualified Shared.Hex as Hex
-import Shared.XorUtils (xorStringChar)
 import Shared.Histogram (HistValue, HistArray, histMin)
 import Shared.KeyScoring (singleByteXorKeyScores)
 import Shared.Views (histShow)
+import Shared.XorUtils (xorStringChar)
 
 main :: IO ()
 main = run putStrLn putStrLn putStrLn
 
+run :: ChallengeRunner
 run putResult putError putStatus = do
   cipherTextFile <- readFile "challenge3/ciphertext.txt"
   let cipherTextHex =  concat $ lines cipherTextFile

@@ -8,10 +8,11 @@ import qualified Challenge5.RunChallenge
 import qualified Challenge6.RunChallenge
 import qualified Challenge7.RunChallenge
 
+import Shared.Challenge (ChallengeRunner)
+
 import Data.Time.Clock (getCurrentTime, diffUTCTime)
 import System.Environment (getArgs)
 import Text.PrettyPrint.ANSI.Leijen
-
 
 argMatch :: String -> IO Bool
 argMatch (label) = do
@@ -29,13 +30,13 @@ main = do
   runChallenge "Challenge 7" Challenge7.RunChallenge.run
 
 
-runChallengeArg :: String -> ((String -> IO ()) -> (String -> IO ()) -> (String -> IO ()) -> IO ()) -> IO ()
+runChallengeArg :: String -> ChallengeRunner -> IO ()
 runChallengeArg label fn = do
   argMatches <- argMatch label
   let ch = runChallenge label fn
   if argMatches then ch else return ()
 
-runChallenge :: String -> ((String -> IO ()) -> (String -> IO ()) -> (String -> IO ()) -> IO ()) -> IO ()
+runChallenge :: String -> ChallengeRunner -> IO ()
 runChallenge label fn = do
   let extendedLine = replicate (60 - length label) '-'
   let labelText = "------- [ " ++ label ++ "] ---" ++ extendedLine

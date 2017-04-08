@@ -1,5 +1,7 @@
 
 module Challenge5.RunChallenge (run, main) where
+
+import Shared.Challenge (ChallengeRunner)
 import qualified Shared.Hex as Hex
 import Shared.XorUtils (xorStrings)
 import Shared.TextUtils (repeatToLength, trimWhitespace)
@@ -7,6 +9,7 @@ import Shared.TextUtils (repeatToLength, trimWhitespace)
 main :: IO ()
 main = run putStrLn putStrLn putStrLn
 
+run :: ChallengeRunner
 run putResult putError putStatus = do
   plainTextFile <- readFile "challenge5/plaintext.txt"
   let plainText = trimWhitespace plainTextFile
