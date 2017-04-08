@@ -14,11 +14,6 @@ import Data.Time.Clock (getCurrentTime, diffUTCTime)
 import System.Environment (getArgs)
 import Text.PrettyPrint.ANSI.Leijen
 
-argMatch :: String -> IO Bool
-argMatch (label) = do
-   args <- getArgs
-   if null args then return True else return $ (head args) == label
-
 main :: IO ()
 main = do
   runChallengeArg "Challenge 1" Challenge1.RunChallenge.run
@@ -29,6 +24,10 @@ main = do
   runChallengeArg "Challenge 6" Challenge6.RunChallenge.run
   runChallengeArg "Challenge 7" Challenge7.RunChallenge.run
 
+argMatch :: String -> IO Bool
+argMatch (label) = do
+   args <- getArgs
+   if null args then return True else return $ (head args) == label
 
 runChallengeArg :: String -> ChallengeRunner -> IO ()
 runChallengeArg label fn = do
