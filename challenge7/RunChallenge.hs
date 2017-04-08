@@ -17,25 +17,21 @@ main = run putStrLn putStrLn putStrLn
 type Key = Data.ByteString.Char8.ByteString
 
 secretKey :: Key
--- secretKey = Data.ByteString.Char8.pack "12-456-89A-CDE-012-456-89A-CDE-"
 secretKey = Data.ByteString.Char8.pack "YELLOW SUBMARINE"
-
 
 cipherInitNoErr :: BlockCipher c => Key -> c
 cipherInitNoErr k = case cipherInit k of
   CryptoPassed a -> a
   CryptoFailed e -> error (show e)
 
--- cipherMakeKey :: Cipher cipher => cipher -> Key -> cipher
--- cipherMakeKey _ = Key -- Yeah Lazyness!!!!!!
-
 run :: ChallengeRunner
 run putResult putError putStatus = do
   cipherTextFile <- readFile "challenge7/ciphertext.txt"
-  let cipherText = Data.ByteString.Char8.pack $ Base64.decode cipherTextFile
+  expectedPlainText <- readFile "challenge7/expected.txt"
+  let cipherText = Data.ByteString.Char8.pack $ Base64.decode $ concat $ lines cipherTextFile
   let ctx = cipherInitNoErr secretKey :: AES128
   let plainText = (ecbDecrypt ctx) cipherText
+  -- Data.ByteString.Char8.writeFile "challenge7/plaintext.txt" plainText
   Data.ByteString.Char8.putStrLn plainText
-
-  if False then putResult "OK! Expected result."
+  if (Data.ByteString.Char8.pack expectedPlainText) == plainText then putResult "OK! Expected result."
   else putError "ERROR! Result not as expected."
