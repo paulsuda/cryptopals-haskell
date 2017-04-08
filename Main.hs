@@ -21,13 +21,13 @@ argMatch (label) = do
 
 main :: IO ()
 main = do
-  runChallenge "Challenge 1" Challenge1.RunChallenge.run
-  runChallenge "Challenge 2" Challenge2.RunChallenge.run
-  runChallenge "Challenge 3" Challenge3.RunChallenge.run
-  runChallenge "Challenge 4" Challenge4.RunChallenge.run
-  runChallenge "Challenge 5" Challenge5.RunChallenge.run
-  runChallenge "Challenge 6" Challenge6.RunChallenge.run
-  runChallenge "Challenge 7" Challenge7.RunChallenge.run
+  runChallengeArg "Challenge 1" Challenge1.RunChallenge.run
+  runChallengeArg "Challenge 2" Challenge2.RunChallenge.run
+  runChallengeArg "Challenge 3" Challenge3.RunChallenge.run
+  runChallengeArg "Challenge 4" Challenge4.RunChallenge.run
+  runChallengeArg "Challenge 5" Challenge5.RunChallenge.run
+  runChallengeArg "Challenge 6" Challenge6.RunChallenge.run
+  runChallengeArg "Challenge 7" Challenge7.RunChallenge.run
 
 
 runChallengeArg :: String -> ChallengeRunner -> IO ()
