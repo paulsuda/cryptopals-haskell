@@ -1,4 +1,4 @@
-Doing the (cryptopals.com)[https://cryptopals.com/] crypto challenges in Haskell, and trying to learn Haskell at the same time.
+Doing the [cryptopals.com](https://cryptopals.com/) crypto challenges in Haskell, and trying to learn Haskell at the same time.
 
 ## Notes:
 
