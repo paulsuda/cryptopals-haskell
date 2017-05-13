@@ -7,6 +7,7 @@ import qualified Challenge4.RunChallenge
 import qualified Challenge5.RunChallenge
 import qualified Challenge6.RunChallenge
 import qualified Challenge7.RunChallenge
+import qualified Challenge8.RunChallenge
 
 import Shared.Challenge (ChallengeRunner)
 
@@ -23,6 +24,7 @@ main = do
   runChallengeArg "Challenge 5" Challenge5.RunChallenge.run
   runChallengeArg "Challenge 6" Challenge6.RunChallenge.run
   runChallengeArg "Challenge 7" Challenge7.RunChallenge.run
+  runChallengeArg "Challenge 8" Challenge8.RunChallenge.run
 
 argMatch :: String -> IO Bool
 argMatch (label) = do
